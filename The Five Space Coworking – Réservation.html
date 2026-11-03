@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>The Five Space Coworking – Réservation</title>
+<style>
+:root{--bg:#f4f7f8;--card:#fff;--tx:#1b2a30;--mu:#5d6f76;--ac:#1f4e5f;--ac2:#e8f1f4;--bd:#d5e0e4;--ok:#25d366;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#10181b;--card:#182327;--tx:#e8eff1;--mu:#9bb0b8;--ac:#6bb7cf;--ac2:#1f3238;--bd:#2c3d43}}
+:root[data-theme="dark"]{--bg:#10181b;--card:#182327;--tx:#e8eff1;--mu:#9bb0b8;--ac:#6bb7cf;--ac2:#1f3238;--bd:#2c3d43}
+*{box-sizing:border-box}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--tx);font-family:system-ui,-apple-system,"Segoe UI",Arial,sans-serif;line-height:1.45}
+.w{max-width:520px;margin:0 auto;padding:20px 16px 40px}
+h1{font-size:1.5rem;margin:0 0 4px;color:var(--ac)}
+.sub{color:var(--mu);margin:0 0 18px}
+.card{background:var(--card);border:1px solid var(--bd);border-radius:14px;padding:16px;margin-bottom:14px}
+label{display:block;font-weight:600;font-size:.9rem;margin:12px 0 6px}
+label:first-child{margin-top:0}
+select,input,textarea{width:100%;padding:12px;border-radius:10px;border:1px solid var(--bd);background:var(--bg);color:var(--tx);font:inherit}
+.row{display:flex;gap:10px}.row>div{flex:1}
+.price{background:var(--ac2);border-radius:12px;padding:14px;margin-top:14px}
+.price b{font-size:1.25rem;color:var(--ac)}
+.price small{display:block;color:var(--mu);margin-top:4px}
+#go{display:block;text-align:center;text-decoration:none;width:100%;padding:15px;border-radius:12px;background:var(--ok);color:#06280f;font-weight:700;font-size:1.05rem;cursor:pointer}
+.note{font-size:.82rem;color:var(--mu);text-align:center;margin-top:10px}
+.err{color:#c0392b;font-size:.85rem;margin-top:8px;min-height:1em}
+table{width:100%;border-collapse:collapse;font-size:.9rem}
+td{padding:8px 4px;border-bottom:1px solid var(--bd)}td:last-child{text-align:right;font-weight:600;white-space:nowrap}
+</style>
+</head>
+<body>
+<div class="w">
+<h1>The Five Space Coworking</h1>
+<p class="sub">Réservez votre place ou votre salle en 1 minute.</p>
+
+<div class="card">
+<label for="svc">Que souhaitez-vous réserver ?</label>
+<select id="svc"></select>
+
+<div class="row">
+<div><label for="date">Date</label><input type="date" id="date"></div>
+<div><label for="time">Heure d’arrivée</label><input type="time" id="time" value="09:00"></div>
+</div>
+
+<div class="row">
+<div><label for="qty" id="qtyl">Durée</label><input type="number" id="qty" min="1" value="1"></div>
+<div><label for="ppl">Personnes</label><input type="number" id="ppl" min="1" value="1"></div>
+</div>
+
+<label for="name">Votre nom</label>
+<input id="name" placeholder="Nom et prénom" autocomplete="name">
+<label for="note">Précisions (facultatif)</label>
+<textarea id="note" rows="2" placeholder="Ex. besoin du vidéoprojecteur"></textarea>
+
+<div class="price"><b id="tot">–</b><small id="det"></small></div>
+<div class="err" id="err"></div>
+<a id="go" href="https://wa.me/21652613188" target="_blank" rel="noopener">Réserver par WhatsApp</a>
+<p class="note">Votre demande est envoyée par WhatsApp. Nous confirmons la disponibilité avec vous.</p>
+</div>
+
+<div class="card">
+<b>Nos tarifs (DT)</b>
+<table id="tbl"></table>
+</div>
+</div>
+
+<script>
+var WA="21652613188";
+var S=[
+{n:"Place à l’heure",lo:3,hi:4,u:"heure",ql:"Nombre d’heures",per:1},
+{n:"Pass journée (place libre)",lo:15,hi:25,u:"jour",ql:"Nombre de jours",per:1},
+{n:"Demi-journée (place libre)",lo:10,hi:15,u:"demi-journée",ql:"Nombre de demi-journées",per:1},
+{n:"Pass semaine",lo:70,hi:100,u:"semaine",ql:"Nombre de semaines",per:1},
+{n:"Abonnement mensuel, place libre",lo:250,hi:350,u:"mois",ql:"Nombre de mois",per:1},
+{n:"Abonnement mensuel, bureau fixe",lo:400,hi:550,u:"mois",ql:"Nombre de mois",per:1},
+{n:"Salle de réunion",lo:30,hi:50,u:"heure",ql:"Nombre d’heures",per:0},
+{n:"Salle de formation, demi-journée",lo:150,hi:250,u:"demi-journée",ql:"Nombre de demi-journées",per:0},
+{n:"Salle de formation, journée",lo:250,hi:400,u:"jour",ql:"Nombre de jours",per:0}
+];
+var $=function(i){return document.getElementById(i)};
+var sel=$("svc");
+S.forEach(function(s,i){var o=document.createElement("option");o.value=i;o.textContent=s.n;sel.appendChild(o)});
+S.forEach(function(s){var r=document.createElement("tr");r.innerHTML="<td>"+s.n+"</td><td>"+s.lo+" à "+s.hi+" / "+s.u+"</td>";$("tbl").appendChild(r)});
+var ev=document.createElement("tr");ev.innerHTML="<td>Événement ou afterwork</td><td>Sur devis</td>";$("tbl").appendChild(ev);
+var d=new Date();d.setMinutes(d.getMinutes()-d.getTimezoneOffset());
+$("date").min=d.toISOString().slice(0,10);$("date").value=d.toISOString().slice(0,10);
+
+function calc(){
+ var s=S[sel.value],q=Math.max(1,parseInt($("qty").value)||1),p=Math.max(1,parseInt($("ppl").value)||1);
+ var m=s.per?p:1;
+ var lo=s.lo*q*m,hi=s.hi*q*m;
+ $("qtyl").textContent=s.ql;
+ $("tot").textContent="Estimation : "+lo+" à "+hi+" DT";
+ $("det").textContent=s.lo+" à "+s.hi+" DT / "+s.u+(s.per&&p>1?" × "+p+" personnes":"");
+ return {s:s,q:q,p:p,lo:lo,hi:hi};
+}
+["svc","qty","ppl"].forEach(function(i){$(i).addEventListener("input",calc)});
+calc();
+
+function build(){
+ var r=calc(),nom=$("name").value.trim()||"(à préciser)";
+ var dt=$("date").value.split("-").reverse().join("/");
+ var t="Bonjour, je souhaite réserver au Five Space Coworking :\n"
+ +"• Service : "+r.s.n+"\n• Date : "+dt+" à "+$("time").value+"\n• Durée : "+r.q+" "+r.s.u+(r.q>1?"(s)":"")+"\n• Personnes : "+r.p+"\n• Estimation : "+r.lo+" à "+r.hi+" DT\n• Nom : "+nom
+ +($("note").value.trim()?"\n• Remarque : "+$("note").value.trim():"")+"\nMerci de me confirmer la disponibilité.";
+ $("go").href="https://wa.me/"+WA+"?text="+encodeURIComponent(t);
+}
+["svc","qty","ppl","name","note","date","time"].forEach(function(i){$(i).addEventListener("input",build)});
+build();
+$("go").addEventListener("click",function(e){if(!$("name").value.trim()){e.preventDefault();$("err").textContent="Merci d’indiquer votre nom.";$("name").focus()}else{$("err").textContent=""}});
+</script>
+</body>
+</html>
